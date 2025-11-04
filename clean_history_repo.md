@@ -1,15 +1,41 @@
-**ATTENZIONE**: crearsi una copia di backup del file sul quale vogliamo ripulire la history.
-Il file verrà elimianto dal file system locale
+**ATTENZIONE:**
+prima di eseguire la pulizia della history per un determinato file,
+creare una copia di backup del file perchè la procedura `git filter-repo` rimuoverà il file anche 
+dal file-system della working direcotry del repo locale.
 
+Ad ogni modo, `git filter-repo` crea una directory `.git-history-backup-<DATE>-<TIME>`  
+come backup di sicurezza prima che il tool riscriva la cronologia del repository.
 
-**procedura completa e aggiornata** per eliminare **tutta la history** del file `setup-global-gitignore.sh` dal tuo repository
-👉 [`https://github.com/vitmil/git_scripts`](https://github.com/vitmil/git_scripts).
+Se la pulizia della history va a buon fine, eliminare anche la directory `.git-history-backup-xxx-xxx`.
 
 ---
 
-## 🧹 PROCEDURA COMPLETA — RIMOZIONE FILE DALLA HISTORY
+# 🧹 Rimuovere tutta la history di un file da un repository GitHub
 
-### 1️⃣ Posizionati nella cartella del tuo repo locale
+Questa guida spiega come eliminare **completamente la cronologia** di un singolo file (`setup-global-gitignore.sh`) dal repository
+👉 [`https://github.com/vitmil/git_scripts`](https://github.com/vitmil/git_scripts),
+senza toccare gli altri file o la struttura del progetto.
+
+---
+
+## 🎯 Obiettivo
+
+Eliminare ogni traccia passata del file $FILE_NAME dal repository Git, in modo che:
+
+* non appaia più nei commit precedenti, nei diff o nei log;
+* sia impossibile recuperarlo anche da versioni precedenti del repo.
+
+---
+
+## 🧰 Prerequisiti
+
+* Linux o macOS con Git installato
+* Accesso in scrittura al repository remoto su GitHub
+* Installazione di `git-filter-repo`
+
+---
+
+## ⚙️ 1️⃣ Posizionati nella cartella del repo locale
 
 ```bash
 cd /usr/local/bin/git_scripts
@@ -17,7 +43,9 @@ cd /usr/local/bin/git_scripts
 
 ---
 
-### 2️⃣ Installa `git-filter-repo` (se non presente)
+## ⚙️ 2️⃣ Installa `git-filter-repo`
+
+Su Ubuntu:
 
 ```bash
 sudo apt install git-filter-repo
@@ -31,22 +59,24 @@ pip install git-filter-repo
 
 ---
 
-### 3️⃣ Rimuovi **tutta la cronologia** del file
+## ⚙️ 3️⃣ Rimuovi il file da tutta la cronologia
 
-Esegui nella **radice del repo**:
+Esegui nella radice del repository:
 
 ```bash
-git filter-repo --path setup-global-gitignore.sh --invert-paths
+FILE_NAME=setup-global-gitignore.sh
+
+git filter-repo --path $FILE_NAME --invert-paths
 ```
 
 ✅ Questo comando:
 
-* Cancella *ogni versione passata* del file `setup-global-gitignore.sh`
-* Mantiene intatto tutto il resto del repository
+* cancella ogni versione del file $FILE_NAME dalla history;
+* mantiene tutto il resto del progetto intatto.
 
 ---
 
-### 4️⃣ Pulisci i riferimenti interni (opzionale ma consigliato)
+## ⚙️ 4️⃣ Pulisci i riferimenti interni (opzionale ma consigliato)
 
 ```bash
 rm -rf .git/refs/original/
@@ -56,21 +86,21 @@ git gc --prune=now --aggressive
 
 ---
 
-### 5️⃣ Configura (o ricontrolla) il remoto GitHub
+## ⚙️ 5️⃣ Configura (o verifica) il remoto GitHub
 
-Verifica se è già impostato:
+Controlla se il remoto è già configurato:
 
 ```bash
 git remote -v
 ```
 
-Se non vedi nulla, aggiungi il remoto del tuo repository GitHub:
+Se non vedi nulla, aggiungilo manualmente:
 
 ```bash
 git remote add origin https://github.com/vitmil/git_scripts.git
 ```
 
-Controlla che sia registrato correttamente:
+Verifica:
 
 ```bash
 git remote -v
@@ -85,17 +115,16 @@ origin  https://github.com/vitmil/git_scripts.git (push)
 
 ---
 
-### 6️⃣ Sovrascrivi la history remota (⚠️ operazione distruttiva)
-
-Esegui:
+## ⚙️ 6️⃣ Sovrascrivi la cronologia remota (⚠️ operazione distruttiva)
 
 ```bash
 git push origin --force --all
 git push origin --force --tags
 ```
 
-🔴 Attenzione:
-Questo **riscrive tutta la cronologia remota**, quindi chiunque usi quel repo dovrà fare un nuovo clone:
+🔴 **Attenzione:**
+Questa operazione riscrive la history sul server.
+Chiunque usi questo repo dovrà riclonarlo da zero:
 
 ```bash
 git clone https://github.com/vitmil/git_scripts.git
@@ -103,23 +132,54 @@ git clone https://github.com/vitmil/git_scripts.git
 
 ---
 
-### 7️⃣ (Facoltativo) Verifica che il file non esista più nella history
+## ⚙️ 7️⃣ Verifica che il file sia stato rimosso
 
 ```bash
-git log -- setup-global-gitignore.sh
+git log -- $FILE_NAME
 ```
 
-👉 Non deve restituire alcun risultato.
+Il comando non deve restituire nulla ✅
 
 ---
 
-### ✅ RISULTATO FINALE
+## 🗂️ 8️⃣ La directory `.git-history-backup-YYYYMMDD-HHMMSS`
 
-* Il file `setup-global-gitignore.sh` **non esiste più** nel passato né nel presente del repo.
-* Tutta la cronologia è “ripulita”.
-* Il tuo GitHub è aggiornato e coerente con la nuova versione pulita.
+Dopo l’esecuzione di `git filter-repo`, potresti trovare una directory simile a:
+
+```
+.git-history-backup-20251104-131200
+```
+
+### 📦 Cosa contiene
+
+* Una **copia completa della vecchia directory `.git`**, cioè la **history originale** prima della pulizia.
+* Tutti i commit, tag e riferimenti del repository prima della modifica.
+* Anche le versioni passate del file che hai rimosso.
+
+### ⚠️ Posso eliminarla?
+
+Sì, **dopo aver verificato che il repo funzioni correttamente** e che la nuova cronologia sia come desiderato.
+
+Per eliminarla:
+
+```bash
+rm -rf .git-history-backup-20251104-131200
+```
+
+💡 Se vuoi conservarla solo per sicurezza:
+
+```bash
+tar -czf git-history-backup.tar.gz .git-history-backup-20251104-131200
+rm -rf .git-history-backup-20251104-131200
+```
 
 ---
 
-Vuoi che ti prepari anche uno **script Bash automatico** (`clean_file_history.sh`) che esegue tutta questa sequenza in un solo comando (chiedendoti solo il nome del file e l’URL del repo)?
+## ✅ RISULTATO FINALE
 
+* Il file $FILE_NAME è completamente rimosso dalla history.
+* Il repo su GitHub contiene solo la nuova cronologia pulita.
+* La directory `.git-history-backup-*` può essere rimossa o archiviata.
+* Tutti i riferimenti alla versione precedente del file sono eliminati in modo permanente.
+
+---
