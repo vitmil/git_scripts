@@ -12,7 +12,7 @@ Se la pulizia della history va a buon fine, eliminare anche la directory `.git-h
 
 # 🧹 Rimuovere tutta la history di un file da un repository GitHub
 
-Questa guida spiega come eliminare **completamente la cronologia** di un singolo file (`setup-global-gitignore.sh`) dal repository
+Questa guida spiega come eliminare **completamente la cronologia** di un singolo file (`testfile`) dal repository
 👉 [`https://github.com/vitmil/git_scripts`](https://github.com/vitmil/git_scripts),
 senza toccare gli altri file o la struttura del progetto.
 
@@ -64,7 +64,7 @@ pip install git-filter-repo
 Esegui nella radice del repository:
 
 ```bash
-FILE_NAME=setup-global-gitignore.sh
+FILE_NAME=testfile
 
 git filter-repo --path $FILE_NAME --invert-paths
 ```

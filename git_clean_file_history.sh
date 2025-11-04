@@ -34,7 +34,7 @@ fi
 # --- Parametri richiesti ---
 if [[ -z "$1" ]]; then
   err "Uso: $0 <nome_file> [url_repo]"
-  echo "Esempio: $0 setup-global-gitignore.sh https://github.com/vitmil/git_scripts.git"
+  echo "Esempio: $0 testfile https://github.com/vitmil/git_scripts.git"
   exit 1
 fi
 
