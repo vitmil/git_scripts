@@ -109,9 +109,9 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
-terraform.tfvars
-terraform.tfvars.json
-*.auto.tfvars
+#terraform.tfvars
+#terraform.tfvars.json
+#*.auto.tfvars
 *.tfplan
 *.backup
 *.tfbackend
@@ -178,6 +178,8 @@ config.*
 # File di informazioni personali (qualsiasi estensione)
 **/*[Vv][Ii][Mm][Ii]*.[TtMm][XxDd][TtMmDd]*
 **/*[Vv][Ii][Nn][Ff][Oo]*.[TtMm][XxDd][TtMmDd]*
+
+bkp/
 
 # ============================================
 # NOTE
