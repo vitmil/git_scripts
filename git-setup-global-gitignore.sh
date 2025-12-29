@@ -184,6 +184,16 @@ bkp/
 # Tutti i files che hanno "vimi" nel nome (case-insensitive)
 *vimi*
 
+
+# ============================================
+# Binari in /usr/local/bin
+# ============================================
+*speedtest*
+yq
+ollama
+eksctl
+
+
 # ============================================
 # NOTE
 # ============================================
